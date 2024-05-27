@@ -21,7 +21,7 @@ export default function ItemsMenu(props: ItemsProps) {
         )
     }
     return (
-        <li onClick={props.onClick} className={`hover:bg-gray-500 p-1 cursor-pointer ${props.className}`}>
+        <li onClick={props.onClick} className={`hover:bg-gray-500 dark:hover:bg-gray-700 p-1 cursor-pointer ${props.className}`}>
             {props.url ? (
                 <Link href={props.url} passHref >
                     {renderizar()}

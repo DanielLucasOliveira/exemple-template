@@ -1,5 +1,7 @@
 import { BsHouse } from "react-icons/bs"
-import { FaRegBell } from "react-icons/fa"
+import { CiLogin } from "react-icons/ci"
+import { FaRegMoon , FaRegBell } from "react-icons/fa"
+import { GoSun } from "react-icons/go"
 import { IoSettingsOutline } from "react-icons/io5"
 import { MdOutlineLogout } from "react-icons/md"
 
@@ -15,6 +17,18 @@ export const BellIcon = (
     <FaRegBell />
 )
 
+export const LoginIcon = (
+    <CiLogin /> 
+)
+
 export const LogoutIcon = (
-    <MdOutlineLogout  />
+    <MdOutlineLogout />
+)
+
+export const SunIcon = (
+    <GoSun size={20} />
+)
+
+export const MoonIcon = (
+    <FaRegMoon  />
 )
