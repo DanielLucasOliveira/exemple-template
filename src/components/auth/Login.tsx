@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import CardWrapper from "./card-wrapper";
 
-import { RegisterSchema } from "./schema";
+import { LoginSchema } from "./schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
     Form,
@@ -16,9 +16,9 @@ import { Button } from "../ui/button";
 import { z } from "zod";
 import { GoogleIcon } from "@/icons";
 
-export default function Auth(props: any) {
+export default function Login(props: any) {
     const form = useForm({
-        resolver: zodResolver(RegisterSchema),
+        resolver: zodResolver(LoginSchema),
         defaultValues: {
             email: "",
             username: "",
@@ -27,38 +27,21 @@ export default function Auth(props: any) {
         },
     });
 
-    const onSubmit = (data: z.infer<typeof RegisterSchema>) => {
+    const onSubmit = (data: z.infer<typeof LoginSchema>) => {
         console.log(data);
     };
 
     return (
         <div className="xl:w-1/4 lg:w-1/3">
             <CardWrapper
-                label="Create an account"
-                title="Register"
-                backButtonHref="/authenticate?login=true"
-                backButtonLabel="Already have an account? Login here."
+                label="Login with your account"
+                title="Login"
+                backButtonHref="/authenticate?login=false"
+                backButtonLabel="Don't have an account? Register here."
             >
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                         <div className="space-y-4">
-                            <FormField
-                                control={form.control}
-                                name="username"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Username</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                {...field}
-                                                type="text"
-                                                placeholder="Enter your name"
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
                             <FormField
                                 control={form.control}
                                 name="email"
@@ -89,29 +72,17 @@ export default function Auth(props: any) {
                                     </FormItem>
                                 )}
                             />
-                            <FormField
-                                control={form.control}
-                                name="confirmPassword"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Confirm your password</FormLabel>
-                                        <FormControl>
-                                            <Input {...field} type="password" placeholder="******" />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
                         </div>
                         <Button type="submit" className="w-full">
-                            Register
+                            Login
                         </Button>
                     </form>
                 </Form>
                 <Button type="button" className="flex w-full mt-4 bg-white text-black hover:bg-gray-300 border border-gray-300 items-center relative">
                     <i className="absolute left-4">{GoogleIcon}</i>
-                    <span className="w-full text-center">Sign with Google</span>
+                    <span className="w-full text-center">Login with Google</span>
                 </Button>
+
             </CardWrapper>
         </div>
     );

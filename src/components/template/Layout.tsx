@@ -11,8 +11,8 @@ interface LayoutProps {
 
 export default function Layout(params: LayoutProps) {
 
-    const {theme, changeTheme} = useAppData()
-    
+    const { theme } = useAppData()
+
     return (
         <div className={`${theme} flex h-screen w-screen`}>
             <SideMenu />

@@ -1,6 +1,7 @@
 import { BsHouse } from "react-icons/bs"
 import { CiLogin } from "react-icons/ci"
 import { FaRegMoon , FaRegBell } from "react-icons/fa"
+import { FcGoogle } from "react-icons/fc"
 import { GoSun } from "react-icons/go"
 import { IoSettingsOutline } from "react-icons/io5"
 import { MdOutlineLogout } from "react-icons/md"
@@ -31,4 +32,8 @@ export const SunIcon = (
 
 export const MoonIcon = (
     <FaRegMoon  />
+)
+
+export const GoogleIcon = (
+    <FcGoogle size={24}/>
 )
