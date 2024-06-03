@@ -1,11 +1,15 @@
+import ForceAuthentication from "../auth/ForceAuthentication"
+
 interface ContentProps {
-    children? : any
+    children?: any
 }
 
-export default function Content(params : ContentProps) {
-    return ( 
-        <div className="flex flex-col mt-7 dark:text-gray-300">
-            {params.children}
-        </div>
+export default function Content(params: ContentProps) {
+    return (
+        <ForceAuthentication>
+            <div className="flex flex-col mt-7 dark:text-gray-300">
+                {params.children}
+            </div>
+        </ForceAuthentication>
     )
 };

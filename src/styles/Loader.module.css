@@ -1,0 +1,84 @@
+.planet {
+    position: relative;
+    height: 140px;
+    width: 140px;
+}
+
+.loader_main {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 150px;
+    width: 150px;
+    border: 6px solid #38bddfce;
+    z-index: 1;
+    border-radius: 50%;
+    animation: spinX 7s linear infinite;
+    /* Animação mais lenta para o anel */
+}
+
+.loader_one {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 150px;
+    width: 150px;
+    border: 6px solid #2a0bb69d;
+    z-index: 1;
+    border-radius: 50%;
+    animation: spinY 3.5s linear infinite;
+    /* Animação mais lenta para o anel */
+}
+
+.loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 120px;
+    width: 120px;
+    border: 6px solid;
+    border-color: rgb(64, 233, 12) transparent rgb(12, 189, 233) transparent;
+    border-radius: 50%;
+    animation: spin 1.5s linear infinite;
+}
+
+@keyframes spinX {
+    0% {
+        transform: rotateX(45deg) rotateZ(0deg) rotateY(90deg);
+        /* Gire no eixo X e incline */
+    }
+
+    100% {
+        transform: rotateX(45deg) rotateZ(360deg) rotateY(90deg);
+        /* Gire no eixo X e incline */
+    }
+
+}
+
+@keyframes spinY {
+    0% {
+        transform: rotateX(0deg) rotateZ(45deg) rotateY(90deg);
+        /* Gire no eixo X e incline */
+    }
+
+    100% {
+        transform: rotateX(360deg) rotateZ(45deg) rotateY(90deg);
+        /* Gire no eixo X e incline */
+    }
+
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+        filter: hue-rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+        filter: hue-rotate(360deg);
+    }
+}

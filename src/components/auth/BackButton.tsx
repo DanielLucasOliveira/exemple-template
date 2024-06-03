@@ -3,18 +3,24 @@ import { Button } from '../ui/button'
 import Link from 'next/link'
 
 interface BackButtonprops {
-    label: string
-    href: string
+  label: string
+  link: string
+  href: string
 }
 
-const BackButton = ({label, href}: BackButtonprops) => {
+const BackButton = ({ label, href, link }: BackButtonprops) => {
   return (
-    <Button variant="link" className='font-normal w-full' size="sm" asChild>
+    <div className='flex w-full justify-center'>
+      <Button variant="link" className='font-normal hover:no-underline cursor-default m-0 p-0' size="sm">
+        <span >{label}</span>
+      </Button>
+      <Button variant="link" className='font-normal m-0 p-1 hover:text-blue-600' size="sm" asChild>
         <Link href={href}>
-            {label}
+          <span >{" " + link}</span>
         </Link>
-        
-    </Button>
+
+      </Button>
+    </div>
   )
 }
 

@@ -8,6 +8,7 @@ interface SiginProps {
     title: string
     backButtonHref: string
     backButtonLabel: string
+    backButtonLink: string
     children: React.ReactNode
 }
 
@@ -21,7 +22,7 @@ const cardWrapper = (props : SiginProps) => {
             {props.children}
         </CardContent>
         <CardFooter>
-            <BackButton label={props.backButtonLabel} href={props.backButtonHref} />
+            <BackButton label={props.backButtonLabel} href={props.backButtonHref} link={props.backButtonLink} />
         </CardFooter>
     </Card>
   )

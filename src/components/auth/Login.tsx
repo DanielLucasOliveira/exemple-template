@@ -15,6 +15,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { z } from "zod";
 import { GoogleIcon } from "@/icons";
+import useAuth from "@/data/hook/useAuth";
 
 export default function Login(props: any) {
     const form = useForm({
@@ -27,6 +28,8 @@ export default function Login(props: any) {
         },
     });
 
+    const { user, googleLogin } = useAuth();
+
     const onSubmit = (data: z.infer<typeof LoginSchema>) => {
         console.log(data);
     };
@@ -37,7 +40,8 @@ export default function Login(props: any) {
                 label="Login with your account"
                 title="Login"
                 backButtonHref="/authenticate?login=false"
-                backButtonLabel="Don't have an account? Register here."
+                backButtonLabel="Don't have an account?"
+                backButtonLink="Register here."
             >
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -78,7 +82,7 @@ export default function Login(props: any) {
                         </Button>
                     </form>
                 </Form>
-                <Button type="button" className="flex w-full mt-4 bg-white text-black hover:bg-gray-300 border border-gray-300 items-center relative">
+                <Button onClick={googleLogin} type="button" className="flex w-full mt-4 bg-white text-black hover:bg-gray-300 border border-gray-300 items-center relative">
                     <i className="absolute left-4">{GoogleIcon}</i>
                     <span className="w-full text-center">Login with Google</span>
                 </Button>
