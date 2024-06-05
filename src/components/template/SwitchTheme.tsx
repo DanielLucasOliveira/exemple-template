@@ -39,9 +39,9 @@ export default function SwitchTheme(props: SwitchThemeProps) {
 
             <div className={`text-white hidden lg:flex  `}>
                 {isLightTheme ? (
-                    <span className={`ml-3 ${isLightTheme ? 'opacity-100' : 'opacity-0'} transition-all duration-500`}>Claro</span>
+                    <span className={`ml-3 ${isLightTheme ? 'opacity-100' : 'opacity-0'} transition-all duration-500`}>Ligth</span>
                 ) : (
-                    <span className={`ml-8 ${isLightTheme ? 'opacity-0' : 'opacity-100'} transition-all duration-500`}>Escuro</span>
+                    <span className={`ml-8 ${isLightTheme ? 'opacity-0' : 'opacity-100'} transition-all duration-500`}>Dark</span>
                 )}
             </div>
 

@@ -15,7 +15,7 @@ export default function SideMenu(params: MenuProps) {
     const router = useRouter();
 
     function login() {
-        router.push('/authenticate?login=true')
+        router.push('/authentication?login=true')
     }
 
     return (

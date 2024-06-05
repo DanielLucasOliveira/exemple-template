@@ -85,6 +85,8 @@ export function AuthProvider(props: any) {
         if( Cookies.get('template-auth')) {
             const cancel = auth.onIdTokenChanged(sessionConfig);
             return () => cancel();
+        } else {
+            setLoading(false);
         }
     }, []);
 

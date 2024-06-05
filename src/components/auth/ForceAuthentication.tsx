@@ -1,8 +1,16 @@
 import useAuth from '@/data/hook/useAuth'
-import styles from '../../styles/Loader.module.css'
+import Loading from '../template/Loading'
+import { useRouter } from 'next/router'
 
-export default function ForceAuthentication(props: any) {
+interface ForceAuthenticationProps {
+    activate?: boolean
+    children?: any
+}
+
+export default function ForceAuthentication(props: ForceAuthenticationProps) {
     const { user, loading } = useAuth()
+
+    const router = useRouter();
 
     function renderizeContent() {
         return (
@@ -12,23 +20,18 @@ export default function ForceAuthentication(props: any) {
         )
     }
 
-    function onLoading() {
-        return (
-            <div className='flex justify-center items-center h-full planet'>
-                <div className={`${styles.loader_main}`}>
-                </div>
-                <div className={`${styles.loader_one}`}>
-                </div>
-                <div className={`${styles.loader}`}>
-
-                </div>
-            </div>
-        )
-    }
-
-    if(!loading){
-        return renderizeContent()
+    if(!!props.activate) {
+        if(!loading && user?.email){
+            return renderizeContent()
+        } else if (loading){
+            return (
+                <Loading loading={loading}/>
+            )
+        } else {
+            router.push('/authentication?login=true')
+            return null
+        }
     } else {
-        return onLoading()
+        return renderizeContent();
     }
 }

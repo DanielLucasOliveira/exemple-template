@@ -38,7 +38,7 @@ export default function Auth(props: any) {
             <CardWrapper
                 label="Create an account"
                 title="Register"
-                backButtonHref="/authenticate?login=true"
+                backButtonHref="/authentication?login=true"
                 backButtonLabel="Already have an account? "
                 backButtonLink="Login here."
             >
