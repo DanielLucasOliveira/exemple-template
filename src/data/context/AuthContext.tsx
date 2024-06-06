@@ -4,10 +4,12 @@ import { GoogleAuthProvider, signInWithPopup, User as FirebaseUser } from "fireb
 import User from "@/model/User";
 import { useRouter } from "next/router";
 import Cookies from 'js-cookie';
+import firebase from "firebase/compat/app";
 
 interface AuthContextProps {
     user?: User | null;
     googleLogin?: () => Promise<void>;
+    login?: (email: string, password: string) => Promise<void>
     logout?: () => Promise<void>;
     loading?: boolean;
 }
@@ -55,12 +57,38 @@ export function AuthProvider(props: any) {
 
     const router = useRouter();
 
+
+    async function registerUser(/** username, email, password */) {
+        try {
+            setLoading(true)
+            //todo: create method to register the user
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false)
+        }
+    }
+
     async function googleLogin() {
         try {
             setLoading(true)
             const provider = new GoogleAuthProvider();
             const result = await signInWithPopup(auth, provider);
             await sessionConfig(result.user);
+            router.push('/');
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    async function login(email: string, password: string) {
+        try {
+            setLoading(true)
+            const resp = await firebase.auth().signInWithEmailAndPassword(email, password);
+            const user = resp.user as FirebaseUser
+            await sessionConfig(user)
             router.push('/');
         } catch (error) {
             console.error(error);
