@@ -28,7 +28,6 @@ export default function SideMenu(params: MenuProps) {
             <ul className="text-gray-200 flex-grow">
                 <ItemsMenu url="/" text="Home" icon={HomeIcon} />
                 <ItemsMenu url="/settings" text="Settings" icon={ConfigIcon} />
-                <ItemsMenu url="/notifications" text="Notifications" icon={BellIcon} />
             </ul>
             {!!user ? (
                 <ul className="text-red-600 mb-3 ">

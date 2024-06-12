@@ -18,6 +18,9 @@ const config = {
       },
     },
     extend: {
+      margin: {
+        'neg-8': '-8px'
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
