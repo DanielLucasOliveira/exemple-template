@@ -15,17 +15,17 @@ interface LayoutProps {
 
 export default function Layout(params: LayoutProps) {
 
-    const { theme } = useAppData()
-    const [menuVisible, setMenuVisible] = useState(false)
+    const { theme, changeMenuState, menuState } = useAppData()
     const [margin, setMargin] = useState(false)
+    
 
     const handleButtonClick = () => {
-        setMenuVisible(!menuVisible);
+        changeMenuState()
         setMargin(false);
     };
 
     const handleMouseOver = () => {
-        if (!menuVisible) {
+        if (!menuState) {
             setMargin(true);
         }
     };
@@ -37,7 +37,7 @@ export default function Layout(params: LayoutProps) {
     return (
         <ForceAuthentication activate={false}>
             <div className={`${theme} flex h-screen w-screen`}>
-                {menuVisible && <SideMenu />}
+                {menuState && <SideMenu />}
                 <div
                     className={`flex flex-col bg-gray-600 dark:bg-gray-900 ${margin ? 'w-2' : 'w-0'}`}
                     onMouseOver={handleMouseOver}
@@ -45,12 +45,12 @@ export default function Layout(params: LayoutProps) {
                 >
                     <Button
                         onClick={handleButtonClick}
-                        className={`h-10 bg-transparent absolute p-0 ms-1 mt-10 ${menuVisible
+                        className={`h-10 bg-transparent absolute p-0 ms-1 mt-10 ${menuState
                                 ? 'bg-gray-600 dark:bg-gray-900 hover:bg-gray-600 dark:hover:bg-gray-900 rounded-none rounded-r-md ms-neg-8'
                                 : 'hover:bg-gray-600 hover:border-l-4 border-l-gray-600 dark:hover:bg-gray-900  dark:border-l-gray-900'
                             }`}
                     >
-                        {menuVisible ? CloseMenuIcon : OpenMenuIcon}
+                        {menuState ? CloseMenuIcon : OpenMenuIcon}
                     </Button>
                 </div>
                 <div className="flex flex-col w-full p-7 bg-gray-200 dark:bg-gray-800">
