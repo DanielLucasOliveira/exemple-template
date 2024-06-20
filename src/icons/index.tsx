@@ -1,5 +1,6 @@
 import { BsHouse } from "react-icons/bs"
-import { CiLogin } from "react-icons/ci"
+import { CgMenu } from "react-icons/cg"
+import { CiLogin, CiMenuBurger } from "react-icons/ci"
 import { FaRegMoon , FaRegBell } from "react-icons/fa"
 import { FcGoogle } from "react-icons/fc"
 import { GoSun } from "react-icons/go"
@@ -45,4 +46,8 @@ export const OpenMenuIcon = (
 
 export const CloseMenuIcon = (
     <IoIosArrowBack className="dark:text-gray-400 text-gray-800" />
+)
+
+export const MenuIcon = (
+    <CgMenu  className="dark:text-gray-600 text-gray-600 hover:text-gray-900 dark:hover:text-gray-700" size={28}/>
 )

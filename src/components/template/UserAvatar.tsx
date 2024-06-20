@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function UserAvatar() {
-    const { user } = useAuth()
+    const { user } = useAuth();
     return ( 
         <Link href={'/profile'} className="ml-2">
             <Image 
