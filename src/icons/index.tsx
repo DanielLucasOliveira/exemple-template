@@ -49,5 +49,5 @@ export const CloseMenuIcon = (
 )
 
 export const MenuIcon = (
-    <CgMenu  className="dark:text-gray-600 text-gray-600 hover:text-gray-900 dark:hover:text-gray-700" size={28}/>
+    <CgMenu  className="dark:text-gray-600 text-gray-800 hover:text-gray-600 dark:hover:text-gray-700" size={28}/>
 )

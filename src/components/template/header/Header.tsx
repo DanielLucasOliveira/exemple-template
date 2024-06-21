@@ -22,7 +22,7 @@ export default function Header(params: HeaderProps) {
 
     return (
 
-        <div className="flex p-2 border-y-2 border-gray-600 dark:border-gray-950">
+        <div className="flex p-2 border-y-2 border-gray-700 dark:border-gray-950">
             <MenuButton />
             <div className="flex flex-grow justify-start items-center">
                 <ButtonHeader text="Finans" isSelected={selected === 'finans'} onClick={() => renderize('finans')}/>
