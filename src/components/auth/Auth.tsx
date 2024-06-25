@@ -16,8 +16,13 @@ import { Button } from "../ui/button";
 import { z } from "zod";
 import { GoogleIcon } from "@/icons";
 import useAuth from "@/data/hook/useAuth";
+import { useRouter } from "next/router";
 
 export default function Auth(props: any) {
+    const { user, googleLogin, registerUser } = useAuth();
+    
+    const router = useRouter();
+
     const form = useForm({
         resolver: zodResolver(RegisterSchema),
         defaultValues: {
@@ -28,10 +33,17 @@ export default function Auth(props: any) {
         },
     });
 
-    const onSubmit = (data: z.infer<typeof RegisterSchema>) => {
-        console.log(data);
+    const onSubmit = async (data: z.infer<typeof RegisterSchema>) => {
+        try {
+            if(registerUser){
+                const response = await registerUser(data)
+            }
+            // faça algo com a resposta, como redirecionar o usuário ou mostrar uma mensagem de sucesso
+        } catch (error) {
+            console.error(error);
+            // manipule o erro, mostre uma mensagem de erro ao usuário, etc.
+        }
     };
-    const { user, googleLogin } = useAuth();
 
     return (
         <div className="xl:w-1/4 lg:w-1/3">

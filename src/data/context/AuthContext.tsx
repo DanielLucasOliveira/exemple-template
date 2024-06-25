@@ -4,11 +4,12 @@ import { GoogleAuthProvider, signInWithPopup, User as FirebaseUser } from "fireb
 import User from "@/model/User";
 import { useRouter } from "next/router";
 import Cookies from 'js-cookie';
-import firebase from "firebase/compat/app";
+import axios from "axios";
 
 interface AuthContextProps {
     user?: User | null;
     googleLogin?: () => Promise<void>;
+    registerUser?: (data: User) => Promise<any>;
     login?: (email: string, password: string) => Promise<void>
     logout?: () => Promise<void>;
     loading?: boolean;
@@ -58,16 +59,25 @@ export function AuthProvider(props: any) {
     const router = useRouter();
 
 
-    async function registerUser(/** username, email, password */) {
+    async function registerUser(data: User): Promise<void> {
         try {
             setLoading(true)
-            //todo: create method to register the user
+            const response = await axios.post(`/api/users/create`, data);
+            if (response.statusText === 'OK') {
+                const { email, password } = response.data;
+                if (email && password) {
+                    await login(email, password);
+                } else {
+                    console.error("Email or password is undefined");
+                }
+            }
         } catch (error) {
             console.error(error);
         } finally {
             setLoading(false)
         }
     }
+    
 
     async function googleLogin() {
         try {
@@ -86,10 +96,16 @@ export function AuthProvider(props: any) {
     async function login(email: string, password: string) {
         try {
             setLoading(true)
-            const resp = await firebase.auth().signInWithEmailAndPassword(email, password);
-            const user = resp.user as FirebaseUser
-            await sessionConfig(user)
-            router.push('/');
+            const userExist = await axios.post(`/api/users/findByEmail`, {email})
+            if(userExist) {
+                console.log("Usuario encontrado");
+                
+            }
+            // const resp = await firebase.auth().signInWithEmailAndPassword(email, password);
+            // //TODO: CHANGE LOGIN METHOD
+            // const user = resp.user as FirebaseUser
+            // await sessionConfig(user)
+            // router.push('/');
         } catch (error) {
             console.error(error);
         } finally {
@@ -119,7 +135,7 @@ export function AuthProvider(props: any) {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user, googleLogin, logout, loading }}>
+        <AuthContext.Provider value={{ user, googleLogin, logout, loading, registerUser, login }}>
             {props.children}
         </AuthContext.Provider>
     );
