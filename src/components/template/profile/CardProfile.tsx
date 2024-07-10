@@ -24,11 +24,11 @@ export default function CardProfile(params: any) {
                     <ul className="flex flex-col">
                         <li className="flex flex-col">
                             <label>Name:</label>
-                            <span className="mb-2">Daniel Lucas</span>
+                            <span className="mb-2">{user?.name}</span>
                         </li>
                         <li className="flex flex-col">
                             <label>E-mail:</label>
-                            <span className="mb-2">daniel.lucas1507@gmail.com</span>
+                            <span className="mb-2">{user?.email}</span>
                         </li>
                     </ul>
 
