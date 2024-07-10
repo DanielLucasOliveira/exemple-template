@@ -27,7 +27,7 @@ export default function Auth(props: any) {
         resolver: zodResolver(RegisterSchema),
         defaultValues: {
             email: "",
-            username: "",
+            name: "",
             password: "",
             confirmPassword: "",
         },
@@ -59,7 +59,7 @@ export default function Auth(props: any) {
                         <div className="space-y-4">
                             <FormField
                                 control={form.control}
-                                name="username"
+                                name="name"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Username</FormLabel>

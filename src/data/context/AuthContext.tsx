@@ -1,10 +1,11 @@
 import { createContext, useEffect, useState } from "react";
 import { auth } from '../../firebase/config';
-import { GoogleAuthProvider, signInWithPopup, User as FirebaseUser } from "firebase/auth";
+import { GoogleAuthProvider, signInWithPopup, User as FirebaseUser, signInWithEmailAndPassword } from "firebase/auth";
 import User from "@/model/User";
 import { useRouter } from "next/router";
 import Cookies from 'js-cookie';
 import axios from "axios";
+import bcrypt from "bcryptjs";
 
 interface AuthContextProps {
     user?: User | null;
@@ -21,7 +22,7 @@ async function normalizedUser(firebaseUser: FirebaseUser): Promise<User> {
     const token = await firebaseUser.getIdToken();
     return {
         uid: firebaseUser.uid,
-        username: firebaseUser.displayName || '',
+        name: firebaseUser.displayName || '',
         email: firebaseUser.email || '',
         token: token,
         provider: firebaseUser.providerData[0]?.providerId || '',
@@ -58,75 +59,91 @@ export function AuthProvider(props: any) {
 
     const router = useRouter();
 
-
     async function registerUser(data: User): Promise<void> {
         try {
-            setLoading(true)
-            const response = await axios.post(`/api/users/create`, data);
-            if (response.statusText === 'OK') {
-                const { email, password } = response.data;
-                if (email && password) {
-                    await login(email, password);
-                } else {
-                    console.error("Email or password is undefined");
+            setLoading(true);
+            if (data.password) {
+                
+                const encrypted = await bcrypt.hash(data.password, 13);
+                const parseData = {
+                    name: data.name,
+                    password: encrypted,
+                    email: data.email,
+                    image: data.imageUrl
+                }
+                const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/user`, parseData);
+                console.log(response);
+                
+                if (response.statusText === 'OK') {
+                    const { email } = response.data;
+                    if (email && data.password) {
+                        await login(email, data.password);
+                    } else {
+                        console.error("Email or password is undefined");
+                    }
                 }
             }
         } catch (error) {
             console.error(error);
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
     }
-    
 
     async function googleLogin() {
         try {
-            setLoading(true)
+            setLoading(true);
             const provider = new GoogleAuthProvider();
             const result = await signInWithPopup(auth, provider);
+
             await sessionConfig(result.user);
             router.push('/');
         } catch (error) {
             console.error(error);
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
     }
 
     async function login(email: string, password: string) {
         try {
-            setLoading(true)
-            const userExist = await axios.post(`/api/users/findByEmail`, {email})
-            if(userExist) {
-                console.log("Usuario encontrado");
-                
+            setLoading(true);
+            const hash = await bcrypt.hash(password, 13);
+            const isMatch = await bcrypt.compare(password, hash);
+            if (isMatch) {
+                const response = await axios.post(`/api/users/login`, { email, password });
+
+                if (response.statusText === 'OK') {
+                    const userData = response.data.user;
+                    setUser(userData);
+                    manageCookies(true);
+                    router.push('/');
+                } else {
+                    console.error("Invalid email or password");
+                }
             }
-            // const resp = await firebase.auth().signInWithEmailAndPassword(email, password);
-            // //TODO: CHANGE LOGIN METHOD
-            // const user = resp.user as FirebaseUser
-            // await sessionConfig(user)
-            // router.push('/');
+
         } catch (error) {
             console.error(error);
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
     }
 
     async function logout() {
         try {
-            setLoading(true)
-            await auth.signOut()
-            await sessionConfig(null)
+            setLoading(true);
+            await auth.signOut();
+            await sessionConfig(null);
         } catch (error) {
             console.error(error);
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
     }
 
     useEffect(() => {
-        if( Cookies.get('template-auth')) {
+        if (Cookies.get('template-auth')) {
             const cancel = auth.onIdTokenChanged(sessionConfig);
             return () => cancel();
         } else {
