@@ -16,7 +16,7 @@ export default function CardProfile(params: any) {
                         height={200}
                         alt="User Image"
                         className="w-36 h-36 rounded-full cursor-pointer border-2 border-gray-500"
-                    //objectFit="cover"
+                        fetchPriority="auto"
                     />
 
                 </div>

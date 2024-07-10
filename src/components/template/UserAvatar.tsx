@@ -12,6 +12,7 @@ export default function UserAvatar() {
                 height={200}
                 alt="User Image"
                 className="w-10 h-10 rounded-full cursor-pointer"
+                fetchPriority="auto"
             />
         </Link>
     )
