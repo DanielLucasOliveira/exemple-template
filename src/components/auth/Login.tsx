@@ -28,10 +28,13 @@ export default function Login(props: any) {
         },
     });
 
-    const { user, googleLogin } = useAuth();
+    const { googleLogin, login } = useAuth();
 
-    const onSubmit = (data: z.infer<typeof LoginSchema>) => {
-        console.log(data);
+    const onSubmit = async (data: z.infer<typeof LoginSchema>) => {
+        if (login) {
+            const response = await login(data.email, data.password);
+
+        }
     };
 
     return (
