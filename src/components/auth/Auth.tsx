@@ -1,6 +1,5 @@
 import { useForm } from "react-hook-form";
 import CardWrapper from "./card-wrapper";
-
 import { RegisterSchema } from "./schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -17,10 +16,10 @@ import { z } from "zod";
 import { GoogleIcon } from "@/icons";
 import useAuth from "@/data/hook/useAuth";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 
 export default function Auth(props: any) {
-    const { user, googleLogin, registerUser } = useAuth();
-    
+    const { user, googleRegister, registerUser } = useAuth();
     const router = useRouter();
 
     const form = useForm({
@@ -33,15 +32,26 @@ export default function Auth(props: any) {
         },
     });
 
+    useEffect(() => {
+        if (user) {
+            form.reset({
+                email: user.email,
+                name: user.name,
+                password: "",
+                confirmPassword: "",
+            });
+        }
+    }, [form, user]);
+
     const onSubmit = async (data: z.infer<typeof RegisterSchema>) => {
         try {
-            if(registerUser){
-                const response = await registerUser(data)
+            if (registerUser) {
+                await registerUser(data, user?.image ?? "").then(() => {
+                    router.push('/');
+                });
             }
-            // faça algo com a resposta, como redirecionar o usuário ou mostrar uma mensagem de sucesso
         } catch (error) {
             console.error(error);
-            // manipule o erro, mostre uma mensagem de erro ao usuário, etc.
         }
     };
 
@@ -123,9 +133,9 @@ export default function Auth(props: any) {
                         </Button>
                     </form>
                 </Form>
-                <Button onClick={googleLogin} type="button" className="flex w-full mt-4 bg-white text-black hover:bg-gray-300 border border-gray-300 items-center relative">
+                <Button onClick={googleRegister} type="button" className="flex w-full mt-4 bg-white text-black hover:bg-gray-300 border border-gray-300 items-center relative">
                     <i className="absolute left-4">{GoogleIcon}</i>
-                    <span className="w-full text-center">Sign with Google</span>
+                    <span className="flex-1 text-center">Sign in with Google</span>
                 </Button>
             </CardWrapper>
         </div>

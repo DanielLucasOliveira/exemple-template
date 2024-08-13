@@ -1,16 +1,16 @@
 import { createContext, useEffect, useState } from "react";
 import { auth } from '../../firebase/config';
-import { GoogleAuthProvider, signInWithPopup, User as FirebaseUser, signInWithEmailAndPassword } from "firebase/auth";
+import { GoogleAuthProvider, signInWithPopup, User as FirebaseUser } from "firebase/auth";
 import User from "@/model/User";
 import { useRouter } from "next/router";
 import Cookies from 'js-cookie';
 import axios from "axios";
-import bcrypt from "bcryptjs";
 
 interface AuthContextProps {
     user?: User | null;
     googleLogin?: () => Promise<void>;
-    registerUser?: (data: User) => Promise<any>;
+    googleRegister?: () => Promise<User | null>;
+    registerUser?: (data: User, image: string | undefined) => Promise<any>;
     login?: (email: string, password: string) => Promise<void>
     logout?: () => Promise<void>;
     loading?: boolean;
@@ -26,7 +26,7 @@ async function normalizedUser(firebaseUser: FirebaseUser): Promise<User> {
         email: firebaseUser.email || '',
         token: token,
         provider: firebaseUser.providerData[0]?.providerId || '',
-        imageUrl: firebaseUser.photoURL || ''
+        image: firebaseUser.photoURL || ''
     };
 }
 
@@ -59,21 +59,18 @@ export function AuthProvider(props: any) {
 
     const router = useRouter();
 
-    async function registerUser(data: User): Promise<void> {
+    async function registerUser(data: User, image: string | undefined): Promise<void> {
         try {
             setLoading(true);
             if (data.password) {
-                
-                const encrypted = await bcrypt.hash(data.password, 13);
                 const parseData = {
                     name: data.name,
-                    password: encrypted,
+                    password: data.password,
                     email: data.email,
-                    image: data.imageUrl
-                }
+                    image: image
+                };
                 const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/user`, parseData);
-                console.log(response);
-                
+
                 if (response.statusText === 'OK') {
                     const { email } = response.data;
                     if (email && data.password) {
@@ -90,38 +87,64 @@ export function AuthProvider(props: any) {
         }
     }
 
-    async function googleLogin() {
+
+
+    async function googleRegister(): Promise<User | null> {
         try {
-            setLoading(true);
             const provider = new GoogleAuthProvider();
             const result = await signInWithPopup(auth, provider);
-
-            await sessionConfig(result.user);
-            router.push('/');
+            const user = await normalizedUser(result.user);
+            setUser(user);
+            return user;
         } catch (error) {
             console.error(error);
-        } finally {
-            setLoading(false);
+            return null;
         }
     }
 
     async function login(email: string, password: string) {
         try {
             setLoading(true);
-            const hash = await bcrypt.hash(password, 13);
-            const isMatch = await bcrypt.compare(password, hash);
-            if (isMatch) {
-                const response = await axios.post(`/api/users/login`, { email, password });
 
-                if (response.statusText === 'OK') {
-                    const userData = response.data.user;
-                    setUser(userData);
-                    manageCookies(true);
-                    router.push('/');
-                } else {
-                    console.error("Invalid email or password");
-                }
+
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/user/login`, { email, password });
+            console.log(response);
+            
+
+            if (!!response.data.success) {
+                const userData = response.data.user;
+                setUser(userData);
+                manageCookies(true);
+                router.push('/');
+            } else {
+                throw new Error("Invalid email or password");
             }
+
+        } catch (error) {
+            console.error(error);
+            throw new Error("Invalid email or password");
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    async function googleLogin() {
+        try {
+            setLoading(true);
+            const provider = new GoogleAuthProvider();
+            const result = await signInWithPopup(auth, provider);
+            const { email, displayName } = result.user
+
+            await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/user/email/${email}`).then(async (res) => {
+
+                if (res.data === '') {
+                    router.push('/authentication?login=false')
+                } else {
+                    await sessionConfig(result.user);
+                    router.push('/');
+                }
+
+            })
 
         } catch (error) {
             console.error(error);
@@ -152,7 +175,7 @@ export function AuthProvider(props: any) {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user, googleLogin, logout, loading, registerUser, login }}>
+        <AuthContext.Provider value={{ user, googleLogin, googleRegister, logout, loading, registerUser, login }}>
             {props.children}
         </AuthContext.Provider>
     );

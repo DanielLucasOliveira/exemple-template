@@ -16,24 +16,28 @@ import { Button } from "../ui/button";
 import { z } from "zod";
 import { GoogleIcon } from "@/icons";
 import useAuth from "@/data/hook/useAuth";
+import { useState } from "react";
 
 export default function Login(props: any) {
     const form = useForm({
         resolver: zodResolver(LoginSchema),
         defaultValues: {
             email: "",
-            username: "",
             password: "",
-            confirmPassword: "",
         },
     });
 
     const { googleLogin, login } = useAuth();
+    const [error, setError] = useState<string | null>(null); // Adicionar estado de erro
 
     const onSubmit = async (data: z.infer<typeof LoginSchema>) => {
-        if (login) {
-            const response = await login(data.email, data.password);
-
+        try {
+            setError(null);
+            if (login) {
+                await login(data.email, data.password);
+            }
+        } catch (error) {
+            setError((error as Error).message);
         }
     };
 
@@ -80,6 +84,7 @@ export default function Login(props: any) {
                                 )}
                             />
                         </div>
+                        {error && <p className="text-red-500">{error}</p>}
                         <Button type="submit" className="w-full">
                             Login
                         </Button>
@@ -89,7 +94,6 @@ export default function Login(props: any) {
                     <i className="absolute left-4">{GoogleIcon}</i>
                     <span className="w-full text-center">Login with Google</span>
                 </Button>
-
             </CardWrapper>
         </div>
     );

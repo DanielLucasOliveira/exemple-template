@@ -4,7 +4,7 @@ export default interface User {
     name: string
     token?: string
     provider?: string
-    imageUrl?: string
+    image?: string
     password?: string
     confirmPassword?: string
 };
