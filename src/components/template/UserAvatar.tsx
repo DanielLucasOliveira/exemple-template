@@ -7,7 +7,7 @@ export default function UserAvatar() {
     return ( 
         <Link href={'/profile'} className="ml-2">
             <Image 
-                src={user?.imageUrl ?? '/images/avatar.svg'} 
+                src={user?.image ?? '/images/avatar.svg'} 
                 width={200}
                 height={200}
                 alt="User Image"

@@ -4,14 +4,14 @@ import Image from "next/image";
 export default function CardProfile(params: any) {
 
     const { user } = useAuth();
-
+    
     return (
         <div className="flex flex-row text-black dark:text-white mb-6">
             <div className="flex flex-col bg-gray-400 dark:bg-gray-900 rounded-md p-6 shadow-gray-600 dark:shadow-gray-950 shadow-inner">
                 <h3 className="font-semibold text-center">Profile</h3>
                 <div className="flex justify-center p-6">
                     <Image
-                        src={user?.imageUrl ?? '/images/avatar.svg'}
+                        src={user?.image ?? '/images/avatar.svg'}
                         width={200}
                         height={200}
                         alt="User Image"
