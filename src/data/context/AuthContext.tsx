@@ -14,9 +14,12 @@ interface AuthContextProps {
     login?: (email: string, password: string) => Promise<void>
     logout?: () => Promise<void>;
     loading?: boolean;
+    isAuthenticated: boolean;
 }
 
-const AuthContext = createContext<AuthContextProps>({});
+const AuthContext = createContext<AuthContextProps>({
+    isAuthenticated: false
+});
 
 async function normalizedUser(firebaseUser: FirebaseUser): Promise<User> {
     const token = await firebaseUser.getIdToken();
@@ -41,6 +44,7 @@ function manageCookies(logged: any) {
 export function AuthProvider(props: any) {
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<User | null>(null);
+    const isAuthenticated = !!user;
 
     async function sessionConfig(firebaseUser: FirebaseUser | null) {
         if (firebaseUser?.email) {
@@ -105,11 +109,7 @@ export function AuthProvider(props: any) {
     async function login(email: string, password: string) {
         try {
             setLoading(true);
-
-
             const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/user/login`, { email, password });
-            console.log(response);
-            
 
             if (!!response.data.success) {
                 const userData = response.data.user;
@@ -133,7 +133,7 @@ export function AuthProvider(props: any) {
             setLoading(true);
             const provider = new GoogleAuthProvider();
             const result = await signInWithPopup(auth, provider);
-            const { email, displayName } = result.user
+            const { email } = result.user
 
             await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/user/email/${email}`).then(async (res) => {
 
@@ -175,7 +175,7 @@ export function AuthProvider(props: any) {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user, googleLogin, googleRegister, logout, loading, registerUser, login }}>
+        <AuthContext.Provider value={{ user, googleLogin, googleRegister, logout, loading, registerUser, login, isAuthenticated }}>
             {props.children}
         </AuthContext.Provider>
     );
