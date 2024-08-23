@@ -10,8 +10,8 @@ interface AuthContextProps {
     user?: User | null;
     googleLogin?: () => Promise<void>;
     googleRegister?: () => Promise<User | null>;
-    registerUser?: (data: User, image: string | undefined) => Promise<any>;
-    login?: (email: string, password: string) => Promise<void>
+    registerUser?: (data: User, image: string | undefined) => Promise<void>;
+    login?: (email: string, password: string) => Promise<void>;
     logout?: () => Promise<void>;
     loading?: boolean;
     isAuthenticated: boolean;
@@ -33,9 +33,9 @@ async function normalizedUser(firebaseUser: FirebaseUser): Promise<User> {
     };
 }
 
-function manageCookies(logged: any) {
+function manageCookies(logged: boolean) {
     if (logged) {
-        Cookies.set('template-auth', logged, { expires: 7 });
+        Cookies.set('template-auth', logged.toString(), { expires: 7 });
     } else {
         Cookies.remove('template-auth');
     }
@@ -46,19 +46,16 @@ export function AuthProvider(props: any) {
     const [user, setUser] = useState<User | null>(null);
     const isAuthenticated = !!user;
 
-    async function sessionConfig(firebaseUser: FirebaseUser | null) {
-        if (firebaseUser?.email) {
-            const user = await normalizedUser(firebaseUser);
+    async function sessionConfig(user: User | null) {
+        if (user?.email) {
             setUser(user);
             manageCookies(true);
-            setLoading(false);
-            return firebaseUser.email;
         } else {
             setUser(null);
             manageCookies(false);
-            setLoading(false);
-            return false;
         }
+        setLoading(false);
+        return user?.email || false;
     }
 
     const router = useRouter();
@@ -91,8 +88,6 @@ export function AuthProvider(props: any) {
         }
     }
 
-
-
     async function googleRegister(): Promise<User | null> {
         try {
             const provider = new GoogleAuthProvider();
@@ -111,15 +106,14 @@ export function AuthProvider(props: any) {
             setLoading(true);
             const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/user/login`, { email, password });
 
-            if (!!response.data.success) {
+            if (response.data.success) {
                 const userData = response.data.user;
-                setUser(userData);
+                await sessionConfig(userData);
                 manageCookies(true);
                 router.push('/');
             } else {
                 throw new Error("Invalid email or password");
             }
-
         } catch (error) {
             console.error(error);
             throw new Error("Invalid email or password");
@@ -133,19 +127,16 @@ export function AuthProvider(props: any) {
             setLoading(true);
             const provider = new GoogleAuthProvider();
             const result = await signInWithPopup(auth, provider);
-            const { email } = result.user
+            const { email } = result.user;
 
-            await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/user/email/${email}`).then(async (res) => {
-
-                if (res.data === '') {
-                    router.push('/authentication?login=false')
-                } else {
-                    await sessionConfig(result.user);
-                    router.push('/');
-                }
-
-            })
-
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/user/email/${email}`);
+            if (!res.data) {
+                router.push('/authentication?login=false');
+            } else {
+                const user = await normalizedUser(result.user);
+                await sessionConfig(user);
+                router.push('/');
+            }
         } catch (error) {
             console.error(error);
         } finally {
@@ -166,12 +157,18 @@ export function AuthProvider(props: any) {
     }
 
     useEffect(() => {
-        if (Cookies.get('template-auth')) {
-            const cancel = auth.onIdTokenChanged(sessionConfig);
-            return () => cancel();
-        } else {
-            setLoading(false);
-        }
+        const cancel = auth.onIdTokenChanged(async (firebaseUser) => {
+            if (firebaseUser) {
+                const user = await normalizedUser(firebaseUser);
+                await sessionConfig(user);
+            } else {
+                setUser(null);
+                manageCookies(false);
+                setLoading(false);
+            }
+        });
+
+        return () => cancel();
     }, []);
 
     return (
