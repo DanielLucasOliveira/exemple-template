@@ -118,13 +118,13 @@ export function AuthProvider(props: any) {
 
             if (token) {
                 try {
-                    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/auth/profile`, {
+                    const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/auth/profile`, {
                         headers: {
                             Authorization: `Bearer ${token}`,
                         },
                     });
-                    const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/user/login/${response.data.sub}`)
-                    await sessionConfig(data, token);
+
+                    await sessionConfig(data.user, token);
                 } catch (error) {
                     console.log(error);
                     manageCookies(false);
