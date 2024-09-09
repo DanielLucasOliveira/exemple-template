@@ -16,7 +16,7 @@ export default function Profile(params: any) {
             {!isAuthenticated && (
 
                 <div className="flex flex-col">
-                    <span>Você não está logado</span>
+                    <span>You are not logged in</span>
                 </div>
 
             )}

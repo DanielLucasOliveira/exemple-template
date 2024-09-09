@@ -1,4 +1,6 @@
 import { createContext, useEffect, useState } from "react";
+import { GoogleAuthProvider, signInWithPopup, User as FirebaseUser } from "firebase/auth";
+import { auth } from '../../firebase/config';
 import User from "@/model/User";
 import { useRouter } from "next/router";
 import Cookies from 'js-cookie';
@@ -7,7 +9,9 @@ import axios from "axios";
 interface AuthContextProps {
     user?: User | null;
     registerUser?: (data: User, image: string | undefined) => Promise<void>;
+    googleRegister?: () => Promise<User | null>;
     login?: (email: string, password: string) => Promise<void>;
+    googleLogin?: () => Promise<void>;
     logout?: () => Promise<void>;
     loading?: boolean;
     isAuthenticated: boolean;
@@ -16,6 +20,18 @@ interface AuthContextProps {
 const AuthContext = createContext<AuthContextProps>({
     isAuthenticated: false
 });
+
+async function normalizedUser(firebaseUser: FirebaseUser): Promise<User> {
+    const token = await firebaseUser.getIdToken();
+    return {
+        uid: firebaseUser.uid,
+        name: firebaseUser.displayName || '',
+        email: firebaseUser.email || '',
+        token: token,
+        provider: firebaseUser.providerData[0]?.providerId || '',
+        image: firebaseUser.photoURL || ''
+    };
+}
 
 function manageCookies(logged: boolean, token?: string) {
     if (logged && token) {
@@ -71,6 +87,20 @@ export function AuthProvider(props: any) {
         }
     }
 
+
+    async function googleRegister(): Promise<User | null> {
+        try {
+            const provider = new GoogleAuthProvider();
+            const result = await signInWithPopup(auth, provider);
+            const user = await normalizedUser(result.user);
+            setUser(user);
+            return user;
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    }
+
     async function login(email: string, password: string) {
         try {
             setLoading(true);
@@ -98,6 +128,26 @@ export function AuthProvider(props: any) {
         }
     }
 
+    async function googleLogin() {
+        try {
+            setLoading(true);
+            const provider = new GoogleAuthProvider();
+            const result = await signInWithPopup(auth, provider);
+            const { email } = result.user;
+
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/user/email/${email}`);
+            if (!res.data) {
+                router.push('/authentication?login=false');
+            } else {
+                login(res.data.email, res.data.password)
+            }
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
     async function logout() {
         try {
             setLoading(true);
@@ -114,7 +164,6 @@ export function AuthProvider(props: any) {
     useEffect(() => {
         const checkAuth = async () => {
             const token = Cookies.get('template-auth-token');
-
 
             if (token) {
                 try {
@@ -139,7 +188,7 @@ export function AuthProvider(props: any) {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user, logout, loading, registerUser, login, isAuthenticated }}>
+        <AuthContext.Provider value={{ user, logout, loading, registerUser, googleRegister, login, googleLogin, isAuthenticated }}>
             {props.children}
         </AuthContext.Provider>
     );
